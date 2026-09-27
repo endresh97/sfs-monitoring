@@ -1,18 +1,15 @@
 import { Injectable, NgZone } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { DeviceEvent } from '../models/device.model';
 import { ConfigService } from './config.service';
-import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DeviceEventService {
-  private readonly eventSubject = new BehaviorSubject<DeviceEvent | null>(null);
-
-  readonly event$: Observable<DeviceEvent | null> =
-    this.eventSubject.asObservable();
-
+  private readonly eventSubject = new Subject<DeviceEvent>();
+  readonly event$: Observable<DeviceEvent> = this.eventSubject.asObservable();
   private eventSource?: EventSource;
 
   constructor(
@@ -22,7 +19,6 @@ export class DeviceEventService {
 
   connect(deviceId: string): void {
     this.disconnect();
-
     const endpoints = this.configService.getEndpoints();
 
     if (!endpoints) {
@@ -41,8 +37,6 @@ export class DeviceEventService {
     this.eventSource.onmessage = (event) => {
       this.ngZone.run(() => {
         const deviceEvent = JSON.parse(event.data) as DeviceEvent;
-        console.log('deviceEvent :: ', deviceEvent);
-
         this.eventSubject.next(deviceEvent);
       });
     };
