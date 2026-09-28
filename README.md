@@ -1,35 +1,40 @@
-# SfsMonitoring
+# SFS Monitoring
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.16.
+SFS Monitoring is an Angular dashboard for monitoring production devices. It displays live device status and production metrics, including order progress, parts per minute, and parts produced over time.
 
-## Technology Stack
+## Features
 
-- Angular 16
-- Angular Material 16
-- TypeScript
-- SCSS
+- Select a device and view its live status and current order.
+- Track production progress against an order target.
+- View production-rate and parts-produced history in charts.
+- Switch between English and German; the selected language is remembered in the browser.
+- See connection and data-loading errors in the dashboard.
+
+## Technology
+
+- Angular 16 and Angular Material
+- TypeScript and SCSS
 - RxJS
+- D3.js
+- `@ngx-translate` for localization
 
-## Development server
+## Getting started
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Install [Node.js](https://nodejs.org/) and npm, then install dependencies and start the development server:
 
-## Code scaffolding
+```bash
+npm install
+npm start
+```
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Open <http://localhost:4200/>. The development server reloads when source files change.
 
-## Build
+At startup, the app loads its configuration and data from the assessment API defined in `src/app/constants/api.constants.ts`. The API must be reachable for the dashboard to initialize and display device data.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Commands
 
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+```bash
+npm start   # Start the development server
+npm run build   # Build the production application into dist/sfs-monitoring/
+npm test    # Run unit tests with Karma
+```
