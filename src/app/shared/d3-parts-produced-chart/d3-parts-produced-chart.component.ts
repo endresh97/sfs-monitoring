@@ -112,23 +112,10 @@ export class D3PartsProducedChartComponent
      * X axis
      */
 
-    const xDomain = d3.extent(sortedData, (d) => new Date(d.timestamp)) as [
-      Date,
-      Date,
-    ];
-
-    /*
-     * Avoid identical domain when only one
-     * SSE event has arrived.
-     */
-
-    if (xDomain[0].getTime() === xDomain[1].getTime()) {
-      xDomain[0] = new Date(xDomain[0].getTime() - 30000);
-
-      xDomain[1] = new Date(xDomain[1].getTime() + 30000);
-    }
-
-    const xScale = d3.scaleTime().domain(xDomain).range([0, innerWidth]);
+    const xScale = d3
+      .scalePoint<number>()
+      .domain(sortedData.map((_, index) => index))
+      .range([0, innerWidth]);
 
     /*
      * Y axis
@@ -152,10 +139,21 @@ export class D3PartsProducedChartComponent
      * X axis
      */
 
+    const xTickIndices =
+      sortedData.length <= 5
+        ? sortedData.map((_, index) => index)
+        : Array.from(
+            { length: 5 },
+            (_, index) =>
+              Math.round((index * (sortedData.length - 1)) / 4),
+          );
+
     const xAxis = d3
       .axisBottom(xScale)
-      .ticks(Math.min(sortedData.length, 6))
-      .tickFormat((d) => d3.timeFormat('%H:%M:%S')(d as Date));
+      .tickValues(xTickIndices)
+      .tickFormat((index) =>
+        d3.timeFormat('%H:%M:%S')(new Date(sortedData[index].timestamp)),
+      );
 
     chartGroup
       .append('g')
@@ -201,7 +199,7 @@ export class D3PartsProducedChartComponent
 
     const line = d3
       .line<PartsProducedPoint>()
-      .x((d) => xScale(new Date(d.timestamp)))
+      .x((_, index) => xScale(index) ?? 0)
       .y((d) => yScale(d.partsProduced))
       .curve(d3.curveMonotoneX);
 
@@ -221,7 +219,7 @@ export class D3PartsProducedChartComponent
       .enter()
       .append('circle')
       .attr('class', 'd3-parts-produced-chart__point')
-      .attr('cx', (d) => xScale(new Date(d.timestamp)))
+      .attr('cx', (_, index) => xScale(index) ?? 0)
       .attr('cy', (d) => yScale(d.partsProduced))
       .attr('r', 3.5);
 

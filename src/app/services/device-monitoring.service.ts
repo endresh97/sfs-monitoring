@@ -141,6 +141,10 @@ export class DeviceMonitoringService implements OnDestroy {
             return;
           }
 
+          if (this.error === 'Unable to load order.') {
+            this.error = '';
+          }
+
           this.partsProducedHistory = [
             ...this.partsProducedHistory,
             {

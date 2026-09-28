@@ -24,6 +24,18 @@
       </mat-card-content>
     </mat-card>
 
+    <div *ngIf="apiError" class="dashboard__api-error" role="alert">
+      <mat-icon aria-hidden="true"> error_outline </mat-icon>
+
+      <div class="dashboard__api-error-content">
+        <span class="dashboard__api-error-title"> Connection error </span>
+
+        <span class="dashboard__api-error-message">
+          {{ apiError }}
+        </span>
+      </div>
+    </div>
+
     <!-- DEVICE OVERVIEW -->
     <section class="dashboard__section" aria-labelledby="overview-heading">
       <div class="dashboard__section-header">
@@ -205,7 +217,7 @@
 
       <div class="dashboard__production-grid">
         <!-- ORDER INFORMATION -->
-        <mat-card class="dashboard__card">
+        <mat-card class="dashboard__card dashboard__order-card">
           <mat-card-header>
             <mat-card-title>Order Information</mat-card-title>
           </mat-card-header>
@@ -223,38 +235,91 @@
               <!-- Order Available -->
               <div
                 *ngIf="deviceMonitoringService.currentOrder; else noOrder"
-                class="dashboard__order"
+                class="dashboard__order-content"
               >
-                <!-- Order Number -->
-                <div class="dashboard__order-item">
-                  <span class="dashboard__order-label"> Order Number </span>
-                  <span class="dashboard__order-value">
-                    {{ deviceMonitoringService.currentOrder.orderNumber }}
-                  </span>
+                <div class="dashboard__order">
+                  <!-- Order Number -->
+                  <div class="dashboard__order-item">
+                    <span class="dashboard__order-label"> Order Number </span>
+                    <span class="dashboard__order-value">
+                      {{ deviceMonitoringService.currentOrder.orderNumber }}
+                    </span>
+                  </div>
+
+                  <!-- Production Target -->
+                  <div class="dashboard__order-item">
+                    <span class="dashboard__order-label">
+                      Production Target
+                    </span>
+                    <span class="dashboard__order-value">
+                      {{
+                        deviceMonitoringService.currentOrder.productionTarget
+                          | number
+                      }}
+                    </span>
+                  </div>
+
+                  <!-- Production State -->
+                  <div class="dashboard__order-item">
+                    <span class="dashboard__order-label">
+                      Production State
+                    </span>
+                    <span class="dashboard__order-value">
+                      {{
+                        deviceMonitoringService.currentOrder.productionState
+                          | number
+                      }}
+                    </span>
+                  </div>
                 </div>
 
-                <!-- Production Target -->
-                <div class="dashboard__order-item">
-                  <span class="dashboard__order-label">
-                    Production Target
-                  </span>
-                  <span class="dashboard__order-value">
-                    {{
-                      deviceMonitoringService.currentOrder.productionTarget
-                        | number
-                    }}
-                  </span>
-                </div>
+                <div class="dashboard__order-progress">
+                  <div class="dashboard__progress-heading">
+                    <span class="dashboard__progress-label">
+                      Order completion
+                    </span>
+                    <span class="dashboard__progress-percentage">
+                      {{
+                        deviceMonitoringService.orderProgressPercentage
+                          | number: "1.0-2"
+                      }}%
+                    </span>
+                  </div>
 
-                <!-- Production State -->
-                <div class="dashboard__order-item">
-                  <span class="dashboard__order-label"> Production State </span>
-                  <span class="dashboard__order-value">
-                    {{
-                      deviceMonitoringService.currentOrder.productionState
-                        | number
-                    }}
-                  </span>
+                  <div
+                    class="dashboard__progress-track"
+                    role="progressbar"
+                    [attr.aria-valuenow]="
+                      deviceMonitoringService.orderProgressPercentage
+                    "
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    [attr.aria-valuetext]="
+                      deviceMonitoringService.currentOrder.productionState +
+                      ' of ' +
+                      deviceMonitoringService.currentOrder.productionTarget +
+                      ' units produced'
+                    "
+                    [attr.aria-label]="
+                      'Order progress ' +
+                      (deviceMonitoringService.orderProgressPercentage
+                        | number: '1.0-2') +
+                      ' percent'
+                    "
+                    [attr.title]="
+                      deviceMonitoringService.currentOrder.productionState +
+                      ' of ' +
+                      deviceMonitoringService.currentOrder.productionTarget +
+                      ' units produced'
+                    "
+                  >
+                    <div
+                      class="dashboard__progress-value"
+                      [style.width.%]="
+                        deviceMonitoringService.orderProgressPercentage
+                      "
+                    ></div>
+                  </div>
                 </div>
               </div>
 
@@ -294,87 +359,6 @@
               [data]="deviceMonitoringService.partsProducedHistory"
             >
             </app-d3-parts-produced-chart>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card class="dashboard__card dashboard__chart-card">
-          <mat-card-header>
-            <mat-card-title> Order Progress </mat-card-title>
-
-            <mat-card-subtitle *ngIf="deviceMonitoringService.currentOrder">
-              Order #{{ deviceMonitoringService.currentOrder.orderNumber }}
-            </mat-card-subtitle>
-          </mat-card-header>
-
-          <mat-card-content>
-            <div
-              *ngIf="deviceMonitoringService.currentOrder; else noOrderProgress"
-              class="dashboard__order-progress"
-            >
-              <div class="dashboard__order-progress-summary">
-                <div class="dashboard__order-progress-produced">
-                  <span class="dashboard__order-progress-value">
-                    {{
-                      deviceMonitoringService.currentOrder.productionState
-                        | number
-                    }}
-                  </span>
-
-                  <span class="dashboard__order-progress-label">
-                    produced
-                  </span>
-                </div>
-
-                <div class="dashboard__order-progress-target">
-                  <span class="dashboard__order-progress-value">
-                    {{
-                      deviceMonitoringService.currentOrder.productionTarget
-                        | number
-                    }}
-                  </span>
-
-                  <span class="dashboard__order-progress-label"> target </span>
-                </div>
-
-                <div class="dashboard__order-progress-percentage">
-                  {{
-                    deviceMonitoringService.orderProgressPercentage
-                      | number: "1.0-2"
-                  }}%
-                </div>
-              </div>
-
-              <!-- Graphical progress -->
-
-              <div
-                class="dashboard__progress-track"
-                role="progressbar"
-                [attr.aria-valuenow]="
-                  deviceMonitoringService.orderProgressPercentage
-                "
-                aria-valuemin="0"
-                aria-valuemax="100"
-                [attr.aria-label]="
-                  'Order progress ' +
-                  (deviceMonitoringService.orderProgressPercentage
-                    | number: '1.0-2') +
-                  ' percent'
-                "
-              >
-                <div
-                  class="dashboard__progress-value"
-                  [style.width.%]="
-                    deviceMonitoringService.orderProgressPercentage
-                  "
-                ></div>
-              </div>
-            </div>
-
-            <ng-template #noOrderProgress>
-              <p class="dashboard__placeholder">
-                Select a device to view order progress.
-              </p>
-            </ng-template>
           </mat-card-content>
         </mat-card>
       </div>

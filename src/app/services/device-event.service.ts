@@ -41,10 +41,8 @@ export class DeviceEventService {
       });
     };
 
-    this.eventSource.onerror = () => {
-      this.ngZone.run(() => {
-        this.disconnect();
-      });
+    this.eventSource.onerror = (error: Event) => {
+      console.error('SSE connection error.', error);
     };
   }
 
