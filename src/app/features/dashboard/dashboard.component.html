@@ -1,0 +1,436 @@
+<div class="dashboard">
+  <mat-toolbar class="dashboard__toolbar">
+    <div class="dashboard__toolbar-content">
+      <div class="dashboard__brand">
+        <h1 class="dashboard__title">{{ "APP.TITLE" | translate }}</h1>
+      </div>
+      <div class="dashboard__toolbar-actions">
+        <mat-select
+          class="dashboard__language"
+          panelClass="dashboard-language-panel"
+          [attr.aria-label]="'LANGUAGE.SELECT' | translate"
+          [value]="languageService.currentLanguage$ | async"
+          (selectionChange)="onLanguageSelected($event.value)"
+        >
+          <mat-select-trigger>
+            <span class="dashboard__language-trigger">
+              <span class="dashboard__language-label">
+                {{ "LANGUAGE.SELECT" | translate }}
+              </span>
+              <span class="dashboard__language-value">
+                {{
+                  ("LANGUAGE." + languageService.currentLanguage.toUpperCase())
+                    | translate
+                }}
+              </span>
+            </span>
+          </mat-select-trigger>
+            <mat-option
+              *ngFor="let language of languageService.availableLanguages"
+              [value]="language"
+            >
+              {{ ("LANGUAGE." + language.toUpperCase()) | translate }}
+            </mat-option>
+        </mat-select>
+        <div class="dashboard__environment">
+          <span class="dashboard__environment-label">
+            {{ "APP.ENVIRONMENT" | translate }}
+          </span>
+          <span class="dashboard__environment-value">TEST</span>
+        </div>
+      </div>
+    </div>
+  </mat-toolbar>
+
+  <div class="dashboard__content">
+    <!-- ERROR -->
+    <mat-card
+      *ngIf="deviceMonitoringService.error"
+      class="dashboard__error-card"
+    >
+      <mat-card-content>
+        <div class="dashboard__error">
+          {{ deviceMonitoringService.error | translate }}
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <div *ngIf="apiError" class="dashboard__api-error" role="alert">
+      <mat-icon aria-hidden="true"> error_outline </mat-icon>
+
+      <div class="dashboard__api-error-content">
+        <span class="dashboard__api-error-title">
+          {{ "ERROR.CONNECTION_TITLE" | translate }}
+        </span>
+
+        <span class="dashboard__api-error-message">
+          {{ apiError | translate }}
+        </span>
+      </div>
+    </div>
+
+    <!-- DEVICE OVERVIEW -->
+    <section class="dashboard__section" aria-labelledby="overview-heading">
+      <div class="dashboard__section-header">
+        <div>
+          <h2 id="overview-heading" class="dashboard__heading">
+            {{ "OVERVIEW.TITLE" | translate }}
+          </h2>
+          <p class="dashboard__description">
+            {{ "OVERVIEW.DESCRIPTION" | translate }}
+          </p>
+        </div>
+      </div>
+
+      <div class="dashboard__overview-grid">
+        <!-- DEVICE SELECTION -->
+        <mat-card class="dashboard__card">
+          <mat-card-header>
+            <mat-card-title>{{ "OVERVIEW.SELECTION" | translate }}</mat-card-title>
+            <mat-card-subtitle>
+              {{ "OVERVIEW.SELECTION_SUBTITLE" | translate }}
+            </mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <!-- Loading -->
+            <div
+              *ngIf="
+                deviceMonitoringService.loadingDevices;
+                else deviceSelector
+              "
+              class="dashboard__loading"
+            >
+              {{ "OVERVIEW.LOADING" | translate }}
+            </div>
+
+            <!-- Device Selector -->
+            <ng-template #deviceSelector>
+              <mat-form-field
+                appearance="outline"
+                class="dashboard__device-field"
+              >
+                <mat-label>{{ "OVERVIEW.DEVICE_LABEL" | translate }}</mat-label>
+                <mat-select
+                  class="device-selection"
+                  [value]="deviceMonitoringService.selectedDeviceId"
+                  (selectionChange)="onDeviceSelected($event.value)"
+                >
+                  <mat-option
+                    *ngFor="let device of deviceMonitoringService.devices"
+                    [value]="device"
+                  >
+                    {{ device }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </ng-template>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- CURRENT STATUS -->
+        <mat-card class="dashboard__card">
+          <mat-card-header>
+            <mat-card-title>{{ "OVERVIEW.STATUS" | translate }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <!-- Device Selected -->
+            <div
+              *ngIf="
+                deviceMonitoringService.selectedDeviceId;
+                else noDeviceSelected
+              "
+              class="dashboard__status-container"
+            >
+              <!-- Device -->
+              <div class="dashboard__status-item">
+                <span class="dashboard__status-label">
+                  {{ "OVERVIEW.DEVICE_LABEL" | translate }}
+                </span>
+                <span class="dashboard__status-value">
+                  {{ deviceMonitoringService.selectedDeviceId }}
+                </span>
+              </div>
+
+              <!-- SSE Event -->
+              <ng-container
+                *ngIf="
+                  deviceMonitoringService.currentEvent;
+                  else waitingForEvent
+                "
+              >
+                <!-- Status -->
+                <div class="dashboard__status-item">
+                  <span class="dashboard__status-label">
+                    {{ "OVERVIEW.STATE" | translate }}
+                  </span>
+                  <span
+                    class="dashboard__status-badge"
+                    [ngClass]="{
+                      'dashboard__status-badge--running':
+                        deviceMonitoringService.currentEvent.status ===
+                        'running',
+                      'dashboard__status-badge--stopped':
+                        deviceMonitoringService.currentEvent.status ===
+                        'stopped',
+                      'dashboard__status-badge--maintenance':
+                        deviceMonitoringService.currentEvent.status ===
+                        'maintenance',
+                    }"
+                  >
+                    <span class="dashboard__status-indicator"></span>
+                    {{
+                      ("STATUS." + deviceMonitoringService.currentEvent.status)
+                        | translate
+                    }}
+                  </span>
+                </div>
+
+                <!-- Parts Per Minute -->
+                <div class="dashboard__status-item">
+                  <span class="dashboard__status-label">
+                    {{ "OVERVIEW.PARTS_PER_MINUTE" | translate }}
+                  </span>
+                  <span class="dashboard__metric-value">
+                    {{
+                      deviceMonitoringService.currentEvent.partsPerMinute
+                        | localizedNumber: 2 : 2
+                    }}
+                  </span>
+                </div>
+
+                <!-- Current Order -->
+                <div class="dashboard__status-item">
+                  <span class="dashboard__status-label">
+                    {{ "OVERVIEW.CURRENT_ORDER" | translate }}
+                  </span>
+                  <span class="dashboard__status-value">
+                    {{ deviceMonitoringService.currentEvent.order }}
+                  </span>
+                </div>
+
+                <!-- Last Updated -->
+                <div
+                  class="dashboard__status-item dashboard__status-item--wide"
+                >
+                  <span class="dashboard__status-label">
+                    {{ "OVERVIEW.LAST_UPDATED" | translate }}
+                  </span>
+                  <span class="dashboard__status-value">
+                    {{
+                      deviceMonitoringService.currentEvent.timestamp
+                        | localizedDate
+                    }}
+                  </span>
+                </div>
+              </ng-container>
+
+              <!-- Waiting For SSE -->
+              <ng-template #waitingForEvent>
+                <div class="dashboard__event-loading">
+                  <span>{{ "OVERVIEW.WAITING" | translate }}</span>
+                </div>
+              </ng-template>
+            </div>
+
+            <!-- No Device Selected -->
+            <ng-template #noDeviceSelected>
+              <p class="dashboard__placeholder">
+                {{ "OVERVIEW.NO_SELECTION" | translate }}
+              </p>
+            </ng-template>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </section>
+
+    <mat-divider></mat-divider>
+
+    <!-- PRODUCTION -->
+    <section class="dashboard__section" aria-labelledby="production-heading">
+      <div class="dashboard__section-header">
+        <div>
+          <h2 id="production-heading" class="dashboard__heading">
+            {{ "PRODUCTION.TITLE" | translate }}
+          </h2>
+          <p class="dashboard__description">
+            {{ "PRODUCTION.DESCRIPTION" | translate }}
+          </p>
+        </div>
+      </div>
+
+      <div class="dashboard__production-grid">
+        <!-- ORDER INFORMATION -->
+        <mat-card class="dashboard__card dashboard__order-card">
+          <mat-card-header>
+            <mat-card-title>
+              {{ "PRODUCTION.ORDER_INFORMATION" | translate }}
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <!-- Loading Order -->
+            <div
+              *ngIf="deviceMonitoringService.loadingOrder; else orderContent"
+              class="dashboard__loading"
+            >
+              <span>{{ "PRODUCTION.LOADING_ORDER" | translate }}</span>
+            </div>
+
+            <!-- Order Content -->
+            <ng-template #orderContent>
+              <!-- Order Available -->
+              <div
+                *ngIf="deviceMonitoringService.currentOrder; else noOrder"
+                class="dashboard__order-content"
+              >
+                <div class="dashboard__order">
+                  <!-- Order Number -->
+                  <div class="dashboard__order-item">
+                    <span class="dashboard__order-label">
+                      {{ "PRODUCTION.ORDER_NUMBER" | translate }}
+                    </span>
+                    <span class="dashboard__order-value">
+                      {{ deviceMonitoringService.currentOrder.orderNumber }}
+                    </span>
+                  </div>
+
+                  <!-- Production Target -->
+                  <div class="dashboard__order-item">
+                    <span class="dashboard__order-label">
+                      {{ "PRODUCTION.TARGET" | translate }}
+                    </span>
+                    <span class="dashboard__order-value">
+                      {{
+                        deviceMonitoringService.currentOrder.productionTarget
+                          | localizedNumber
+                      }}
+                    </span>
+                  </div>
+
+                  <!-- Production State -->
+                  <div class="dashboard__order-item">
+                    <span class="dashboard__order-label">
+                      {{ "PRODUCTION.STATE" | translate }}
+                    </span>
+                    <span class="dashboard__order-value">
+                      {{
+                        deviceMonitoringService.currentOrder.productionState
+                          | localizedNumber
+                      }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="dashboard__order-progress">
+                  <div class="dashboard__progress-heading">
+                    <span class="dashboard__progress-label">
+                      {{ "PRODUCTION.ORDER_PROGRESS" | translate }}
+                    </span>
+                    <span class="dashboard__progress-percentage">
+                      {{
+                        deviceMonitoringService.orderProgressPercentage
+                          | localizedNumber: 0 : 2
+                      }}%
+                    </span>
+                  </div>
+
+                  <div
+                    class="dashboard__progress-track"
+                    role="progressbar"
+                    [attr.aria-valuenow]="
+                      deviceMonitoringService.orderProgressPercentage
+                    "
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    [attr.aria-valuetext]="
+                      'PRODUCTION.ORDER_PROGRESS_ARIA'
+                        | translate
+                          : {
+                              produced:
+                                (deviceMonitoringService.currentOrder
+                                  .productionState | localizedNumber),
+                              target:
+                                (deviceMonitoringService.currentOrder
+                                  .productionTarget | localizedNumber),
+                            }
+                    "
+                    [attr.aria-label]="
+                      'PRODUCTION.ORDER_PROGRESS_PERCENT_ARIA'
+                        | translate
+                          : {
+                              percentage:
+                                (deviceMonitoringService.orderProgressPercentage
+                                  | localizedNumber: 0 : 2),
+                            }
+                    "
+                    [attr.title]="
+                      'PRODUCTION.ORDER_PROGRESS_ARIA'
+                        | translate
+                          : {
+                              produced:
+                                (deviceMonitoringService.currentOrder
+                                  .productionState | localizedNumber),
+                              target:
+                                (deviceMonitoringService.currentOrder
+                                  .productionTarget | localizedNumber),
+                            }
+                    "
+                  >
+                    <div
+                      class="dashboard__progress-value"
+                      [style.width.%]="
+                        deviceMonitoringService.orderProgressPercentage
+                      "
+                    ></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- No Order -->
+              <ng-template #noOrder>
+                <p class="dashboard__placeholder">
+                  {{ "PRODUCTION.NO_ORDER" | translate }}
+                </p>
+              </ng-template>
+            </ng-template>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- PRODUCTION PERFORMANCE -->
+        <mat-card class="dashboard__card">
+          <mat-card-header>
+            <mat-card-title>
+              {{ "PRODUCTION.REAL_TIME" | translate }}
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <app-d3-line-chart
+              [data]="deviceMonitoringService.partsPerMinuteHistory"
+            >
+            </app-d3-line-chart>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Parts Produced -->
+        <mat-card class="dashboard__card">
+          <mat-card-header>
+            <mat-card-title>
+              {{ "PRODUCTION.PARTS_PRODUCED" | translate }}
+            </mat-card-title>
+
+            <mat-card-subtitle>
+              {{ "PRODUCTION.HISTORIC_COUNT" | translate }}
+            </mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <app-d3-parts-produced-chart
+              [data]="deviceMonitoringService.partsProducedHistory"
+            >
+            </app-d3-parts-produced-chart>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </section>
+  </div>
+</div>
