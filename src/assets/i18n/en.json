@@ -1,0 +1,63 @@
+{
+  "APP": {
+    "TITLE": "Device Monitoring",
+    "ENVIRONMENT": "Environment"
+  },
+  "LANGUAGE": {
+    "SELECT": "Language",
+    "EN": "English",
+    "DE": "Deutsch"
+  },
+  "ERROR": {
+    "CONNECTION_TITLE": "Connection error",
+    "GENERIC": "Something went wrong while communicating with the server.",
+    "NETWORK": "Unable to connect to the server. Please check your network connection.",
+    "NOT_FOUND": "The requested resource could not be found.",
+    "SERVER": "The server is currently unavailable. Please try again later.",
+    "LOAD_DEVICES": "Unable to load devices.",
+    "LOAD_ORDER": "Unable to load order.",
+    "DEVICE_EVENT_CONNECTION": "Device event connection failed."
+  },
+  "OVERVIEW": {
+    "TITLE": "Device Overview",
+    "DESCRIPTION": "Monitor device performance and production status in real time.",
+    "SELECTION": "Device Selection",
+    "SELECTION_SUBTITLE": "Select a device to start monitoring",
+    "DEVICE_LABEL": "Device",
+    "LOADING": "Loading devices...",
+    "NO_SELECTION": "Select a device to start monitoring.",
+    "STATUS": "Current Status",
+    "STATE": "Status",
+    "PARTS_PER_MINUTE": "Parts per minute",
+    "CURRENT_ORDER": "Current Order",
+    "LAST_UPDATED": "Last updated",
+    "WAITING": "Waiting for device data..."
+  },
+  "PRODUCTION": {
+    "TITLE": "Production",
+    "DESCRIPTION": "Production information and performance metrics.",
+    "ORDER_INFORMATION": "Order Information",
+    "LOADING_ORDER": "Loading order information...",
+    "ORDER_NUMBER": "Order Number",
+    "TARGET": "Production Target",
+    "STATE": "Production State",
+    "ORDER_PROGRESS": "Order completion",
+    "ORDER_PROGRESS_ARIA": "{{produced}} of {{target}} units produced",
+    "ORDER_PROGRESS_PERCENT_ARIA": "Order progress: {{percentage}} percent",
+    "NO_ORDER": "Select a device to view order information.",
+    "REAL_TIME": "Real-time Production Performance",
+    "PARTS_PRODUCED": "Parts Produced",
+    "HISTORIC_COUNT": "Historic production count"
+  },
+  "CHART": {
+    "WAITING": "Waiting for production data...",
+    "PARTS_PER_MINUTE": "Parts / minute",
+    "PARTS_PRODUCED": "Parts produced",
+    "TIME": "Time"
+  },
+  "STATUS": {
+    "running": "Running",
+    "stopped": "Stopped",
+    "maintenance": "Maintenance"
+  }
+}

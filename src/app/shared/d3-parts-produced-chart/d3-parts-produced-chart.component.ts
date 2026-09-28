@@ -13,6 +13,8 @@ import {
 import { CommonModule } from '@angular/common';
 
 import { MatIconModule } from '@angular/material/icon';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
 import * as d3 from 'd3';
 import { PartsProducedPoint } from 'src/app/models/parts-produced-point.model';
@@ -21,7 +23,7 @@ import { PartsProducedPoint } from 'src/app/models/parts-produced-point.model';
 @Component({
   selector: 'app-d3-parts-produced-chart',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [CommonModule, MatIconModule, TranslateModule],
   templateUrl: './d3-parts-produced-chart.component.html',
   styleUrls: ['./d3-parts-produced-chart.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,6 +40,7 @@ export class D3PartsProducedChartComponent
   chartContainer!: ElementRef<HTMLDivElement>;
 
   private resizeObserver?: ResizeObserver;
+  private languageChangeSubscription?: Subscription;
 
   private readonly chartHeight = 320;
 
@@ -48,7 +51,12 @@ export class D3PartsProducedChartComponent
     left: 64,
   };
 
+  constructor(private readonly translate: TranslateService) {}
+
   ngAfterViewInit(): void {
+    this.languageChangeSubscription = this.translate.onLangChange.subscribe(
+      () => this.renderChart(),
+    );
     this.renderChart();
 
     this.resizeObserver = new ResizeObserver(() => {
@@ -168,7 +176,14 @@ export class D3PartsProducedChartComponent
      * Y axis
      */
 
-    const yAxis = d3.axisLeft(yScale).ticks(6);
+    const yAxis = d3
+      .axisLeft(yScale)
+      .ticks(6)
+      .tickFormat((value) =>
+        new Intl.NumberFormat(this.translate.currentLang || 'en', {
+          maximumFractionDigits: 2,
+        }).format(Number(value)),
+      );
 
     chartGroup
       .append('g')
@@ -234,7 +249,7 @@ export class D3PartsProducedChartComponent
       .attr('x', -innerHeight / 2)
       .attr('y', -48)
       .attr('text-anchor', 'middle')
-      .text('Parts produced');
+      .text(this.translate.instant('CHART.PARTS_PRODUCED'));
 
     /*
      * X axis label
@@ -246,11 +261,12 @@ export class D3PartsProducedChartComponent
       .attr('x', innerWidth / 2)
       .attr('y', innerHeight + 42)
       .attr('text-anchor', 'middle')
-      .text('Time');
+      .text(this.translate.instant('CHART.TIME'));
   }
 
   ngOnDestroy(): void {
     this.resizeObserver?.disconnect();
+    this.languageChangeSubscription?.unsubscribe();
 
     if (this.chartContainer) {
       d3.select(this.chartContainer.nativeElement).selectAll('svg').remove();

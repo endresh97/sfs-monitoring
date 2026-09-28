@@ -17,16 +17,14 @@ export const apiErrorInterceptor: HttpInterceptorFn = (req, next) => {
       }
     }),
     catchError((error: HttpErrorResponse) => {
-      let message = 'Something went wrong while communicating with the server.';
+      let message = 'ERROR.GENERIC';
 
       if (error.status === 0) {
-        message =
-          'Unable to connect to the server. Please check your network connection.';
+        message = 'ERROR.NETWORK';
       } else if (error.status === 404) {
-        message = 'The requested resource could not be found.';
+        message = 'ERROR.NOT_FOUND';
       } else if (error.status >= 500) {
-        message =
-          'The server is currently unavailable. Please try again later.';
+        message = 'ERROR.SERVER';
       }
 
       apiErrorService.showError(message);

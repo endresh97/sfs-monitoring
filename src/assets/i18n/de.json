@@ -1,0 +1,63 @@
+{
+  "APP": {
+    "TITLE": "Maschinenüberwachung",
+    "ENVIRONMENT": "Umgebung"
+  },
+  "LANGUAGE": {
+    "SELECT": "Sprache",
+    "EN": "English",
+    "DE": "Deutsch"
+  },
+  "ERROR": {
+    "CONNECTION_TITLE": "Verbindungsfehler",
+    "GENERIC": "Bei der Kommunikation mit dem Server ist ein Fehler aufgetreten.",
+    "NETWORK": "Keine Verbindung zum Server. Bitte überprüfen Sie Ihre Netzwerkverbindung.",
+    "NOT_FOUND": "Die angeforderte Ressource wurde nicht gefunden.",
+    "SERVER": "Der Server ist derzeit nicht verfügbar. Bitte versuchen Sie es später erneut.",
+    "LOAD_DEVICES": "Geräte konnten nicht geladen werden.",
+    "LOAD_ORDER": "Auftrag konnte nicht geladen werden.",
+    "DEVICE_EVENT_CONNECTION": "Die Verbindung zum Gerät ist fehlgeschlagen."
+  },
+  "OVERVIEW": {
+    "TITLE": "Geräteübersicht",
+    "DESCRIPTION": "Überwachen Sie die Geräteleistung und den Produktionsstatus in Echtzeit.",
+    "SELECTION": "Geräteauswahl",
+    "SELECTION_SUBTITLE": "Wählen Sie ein Gerät zur Überwachung aus",
+    "DEVICE_LABEL": "Gerät",
+    "LOADING": "Geräte werden geladen...",
+    "NO_SELECTION": "Wählen Sie ein Gerät zur Überwachung aus.",
+    "STATUS": "Aktueller Status",
+    "STATE": "Status",
+    "PARTS_PER_MINUTE": "Teile pro Minute",
+    "CURRENT_ORDER": "Aktueller Auftrag",
+    "LAST_UPDATED": "Zuletzt aktualisiert",
+    "WAITING": "Warten auf Gerätedaten..."
+  },
+  "PRODUCTION": {
+    "TITLE": "Produktion",
+    "DESCRIPTION": "Produktionsinformationen und Leistungskennzahlen.",
+    "ORDER_INFORMATION": "Auftragsinformationen",
+    "LOADING_ORDER": "Auftragsinformationen werden geladen...",
+    "ORDER_NUMBER": "Auftragsnummer",
+    "TARGET": "Produktionsziel",
+    "STATE": "Produktionsstand",
+    "ORDER_PROGRESS": "Auftragsfortschritt",
+    "ORDER_PROGRESS_ARIA": "{{produced}} von {{target}} Einheiten produziert",
+    "ORDER_PROGRESS_PERCENT_ARIA": "Auftragsfortschritt: {{percentage}} Prozent",
+    "NO_ORDER": "Wählen Sie ein Gerät, um Auftragsinformationen anzuzeigen.",
+    "REAL_TIME": "Produktionsleistung in Echtzeit",
+    "PARTS_PRODUCED": "Produzierte Teile",
+    "HISTORIC_COUNT": "Bisherige Produktionsmenge"
+  },
+  "CHART": {
+    "WAITING": "Warten auf Produktionsdaten...",
+    "PARTS_PER_MINUTE": "Teile pro Minute",
+    "PARTS_PRODUCED": "Produzierte Teile",
+    "TIME": "Zeit"
+  },
+  "STATUS": {
+    "running": "In Betrieb",
+    "stopped": "Gestoppt",
+    "maintenance": "Wartung"
+  }
+}

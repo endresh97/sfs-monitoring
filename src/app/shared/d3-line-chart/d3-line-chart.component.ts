@@ -13,6 +13,8 @@ import {
 import { CommonModule } from '@angular/common';
 
 import { MatIconModule } from '@angular/material/icon';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
 import * as d3 from 'd3';
 import { PartsPerMinutePoint } from 'src/app/models/parts-produced-point.model';
@@ -21,7 +23,7 @@ import { PartsPerMinutePoint } from 'src/app/models/parts-produced-point.model';
 @Component({
   selector: 'app-d3-line-chart',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [CommonModule, MatIconModule, TranslateModule],
   templateUrl: './d3-line-chart.component.html',
   styleUrls: ['./d3-line-chart.component.scss']
 })
@@ -37,6 +39,7 @@ export class D3LineChartComponent
   chartContainer!: ElementRef<HTMLDivElement>;
 
   private resizeObserver?: ResizeObserver;
+  private languageChangeSubscription?: Subscription;
 
   private readonly chartHeight = 320;
 
@@ -47,7 +50,12 @@ export class D3LineChartComponent
     left: 56,
   };
 
+  constructor(private readonly translate: TranslateService) {}
+
   ngAfterViewInit(): void {
+    this.languageChangeSubscription = this.translate.onLangChange.subscribe(
+      () => this.renderChart(),
+    );
     this.renderChart();
 
     this.resizeObserver = new ResizeObserver(() => {
@@ -154,7 +162,14 @@ export class D3LineChartComponent
      * Y axis
      */
 
-    const yAxis = d3.axisLeft(yScale).ticks(6);
+    const yAxis = d3
+      .axisLeft(yScale)
+      .ticks(6)
+      .tickFormat((value) =>
+        new Intl.NumberFormat(this.translate.currentLang || 'en', {
+          maximumFractionDigits: 2,
+        }).format(Number(value)),
+      );
 
     chartGroup
       .append('g')
@@ -220,7 +235,7 @@ export class D3LineChartComponent
       .attr('x', -innerHeight / 2)
       .attr('y', -42)
       .attr('text-anchor', 'middle')
-      .text('Parts / minute');
+      .text(this.translate.instant('CHART.PARTS_PER_MINUTE'));
 
     /*
      * X axis label
@@ -232,11 +247,12 @@ export class D3LineChartComponent
       .attr('x', innerWidth / 2)
       .attr('y', innerHeight + 42)
       .attr('text-anchor', 'middle')
-      .text('Time');
+      .text(this.translate.instant('CHART.TIME'));
   }
 
   ngOnDestroy(): void {
     this.resizeObserver?.disconnect();
+    this.languageChangeSubscription?.unsubscribe();
 
     if (this.chartContainer) {
       d3.select(this.chartContainer.nativeElement).selectAll('svg').remove();

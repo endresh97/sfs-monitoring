@@ -50,7 +50,7 @@ export class DeviceMonitoringService implements OnDestroy {
         },
         error: () => {
           this.loadingDevices = false;
-          this.error = 'Unable to load devices.';
+          this.error = 'ERROR.LOAD_DEVICES';
         },
       });
   }
@@ -78,7 +78,7 @@ export class DeviceMonitoringService implements OnDestroy {
         this.handleDeviceEvent(event);
       },
       error: () => {
-        this.error = 'Device event connection failed.';
+      this.error = 'ERROR.DEVICE_EVENT_CONNECTION';
       },
     });
   }
@@ -141,7 +141,7 @@ export class DeviceMonitoringService implements OnDestroy {
             return;
           }
 
-          if (this.error === 'Unable to load order.') {
+          if (this.error === 'ERROR.LOAD_ORDER') {
             this.error = '';
           }
 
@@ -166,7 +166,7 @@ export class DeviceMonitoringService implements OnDestroy {
             requestId === this.orderRequestId
           ) {
             this.loadingOrder = false;
-            this.error = 'Unable to load order.';
+            this.error = 'ERROR.LOAD_ORDER';
           }
         },
       });

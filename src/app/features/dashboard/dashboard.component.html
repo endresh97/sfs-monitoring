@@ -2,11 +2,42 @@
   <mat-toolbar class="dashboard__toolbar">
     <div class="dashboard__toolbar-content">
       <div class="dashboard__brand">
-        <h1 class="dashboard__title">Device Monitoring</h1>
+        <h1 class="dashboard__title">{{ "APP.TITLE" | translate }}</h1>
       </div>
-      <div class="dashboard__environment">
-        <span class="dashboard__environment-label">Environment</span>
-        <span class="dashboard__environment-value">TEST</span>
+      <div class="dashboard__toolbar-actions">
+        <mat-select
+          class="dashboard__language"
+          panelClass="dashboard-language-panel"
+          [attr.aria-label]="'LANGUAGE.SELECT' | translate"
+          [value]="languageService.currentLanguage$ | async"
+          (selectionChange)="onLanguageSelected($event.value)"
+        >
+          <mat-select-trigger>
+            <span class="dashboard__language-trigger">
+              <span class="dashboard__language-label">
+                {{ "LANGUAGE.SELECT" | translate }}
+              </span>
+              <span class="dashboard__language-value">
+                {{
+                  ("LANGUAGE." + languageService.currentLanguage.toUpperCase())
+                    | translate
+                }}
+              </span>
+            </span>
+          </mat-select-trigger>
+            <mat-option
+              *ngFor="let language of languageService.availableLanguages"
+              [value]="language"
+            >
+              {{ ("LANGUAGE." + language.toUpperCase()) | translate }}
+            </mat-option>
+        </mat-select>
+        <div class="dashboard__environment">
+          <span class="dashboard__environment-label">
+            {{ "APP.ENVIRONMENT" | translate }}
+          </span>
+          <span class="dashboard__environment-value">TEST</span>
+        </div>
       </div>
     </div>
   </mat-toolbar>
@@ -19,7 +50,7 @@
     >
       <mat-card-content>
         <div class="dashboard__error">
-          {{ deviceMonitoringService.error }}
+          {{ deviceMonitoringService.error | translate }}
         </div>
       </mat-card-content>
     </mat-card>
@@ -28,10 +59,12 @@
       <mat-icon aria-hidden="true"> error_outline </mat-icon>
 
       <div class="dashboard__api-error-content">
-        <span class="dashboard__api-error-title"> Connection error </span>
+        <span class="dashboard__api-error-title">
+          {{ "ERROR.CONNECTION_TITLE" | translate }}
+        </span>
 
         <span class="dashboard__api-error-message">
-          {{ apiError }}
+          {{ apiError | translate }}
         </span>
       </div>
     </div>
@@ -41,10 +74,10 @@
       <div class="dashboard__section-header">
         <div>
           <h2 id="overview-heading" class="dashboard__heading">
-            Device Overview
+            {{ "OVERVIEW.TITLE" | translate }}
           </h2>
           <p class="dashboard__description">
-            Monitor device performance and production status in real time.
+            {{ "OVERVIEW.DESCRIPTION" | translate }}
           </p>
         </div>
       </div>
@@ -53,9 +86,9 @@
         <!-- DEVICE SELECTION -->
         <mat-card class="dashboard__card">
           <mat-card-header>
-            <mat-card-title>Device Selection</mat-card-title>
+            <mat-card-title>{{ "OVERVIEW.SELECTION" | translate }}</mat-card-title>
             <mat-card-subtitle>
-              Select a device to start monitoring
+              {{ "OVERVIEW.SELECTION_SUBTITLE" | translate }}
             </mat-card-subtitle>
           </mat-card-header>
 
@@ -68,7 +101,7 @@
               "
               class="dashboard__loading"
             >
-              Loading devices...
+              {{ "OVERVIEW.LOADING" | translate }}
             </div>
 
             <!-- Device Selector -->
@@ -77,7 +110,7 @@
                 appearance="outline"
                 class="dashboard__device-field"
               >
-                <mat-label>Device</mat-label>
+                <mat-label>{{ "OVERVIEW.DEVICE_LABEL" | translate }}</mat-label>
                 <mat-select
                   class="device-selection"
                   [value]="deviceMonitoringService.selectedDeviceId"
@@ -98,7 +131,7 @@
         <!-- CURRENT STATUS -->
         <mat-card class="dashboard__card">
           <mat-card-header>
-            <mat-card-title>Current Status</mat-card-title>
+            <mat-card-title>{{ "OVERVIEW.STATUS" | translate }}</mat-card-title>
           </mat-card-header>
           <mat-card-content>
             <!-- Device Selected -->
@@ -111,7 +144,9 @@
             >
               <!-- Device -->
               <div class="dashboard__status-item">
-                <span class="dashboard__status-label"> Device </span>
+                <span class="dashboard__status-label">
+                  {{ "OVERVIEW.DEVICE_LABEL" | translate }}
+                </span>
                 <span class="dashboard__status-value">
                   {{ deviceMonitoringService.selectedDeviceId }}
                 </span>
@@ -126,7 +161,9 @@
               >
                 <!-- Status -->
                 <div class="dashboard__status-item">
-                  <span class="dashboard__status-label"> Status </span>
+                  <span class="dashboard__status-label">
+                    {{ "OVERVIEW.STATE" | translate }}
+                  </span>
                   <span
                     class="dashboard__status-badge"
                     [ngClass]="{
@@ -143,7 +180,8 @@
                   >
                     <span class="dashboard__status-indicator"></span>
                     {{
-                      deviceMonitoringService.currentEvent.status | uppercase
+                      ("STATUS." + deviceMonitoringService.currentEvent.status)
+                        | translate
                     }}
                   </span>
                 </div>
@@ -151,19 +189,21 @@
                 <!-- Parts Per Minute -->
                 <div class="dashboard__status-item">
                   <span class="dashboard__status-label">
-                    Parts per minute
+                    {{ "OVERVIEW.PARTS_PER_MINUTE" | translate }}
                   </span>
                   <span class="dashboard__metric-value">
                     {{
                       deviceMonitoringService.currentEvent.partsPerMinute
-                        | number: "1.2-2"
+                        | localizedNumber: 2 : 2
                     }}
                   </span>
                 </div>
 
                 <!-- Current Order -->
                 <div class="dashboard__status-item">
-                  <span class="dashboard__status-label"> Current Order </span>
+                  <span class="dashboard__status-label">
+                    {{ "OVERVIEW.CURRENT_ORDER" | translate }}
+                  </span>
                   <span class="dashboard__status-value">
                     {{ deviceMonitoringService.currentEvent.order }}
                   </span>
@@ -173,11 +213,13 @@
                 <div
                   class="dashboard__status-item dashboard__status-item--wide"
                 >
-                  <span class="dashboard__status-label"> Last updated </span>
+                  <span class="dashboard__status-label">
+                    {{ "OVERVIEW.LAST_UPDATED" | translate }}
+                  </span>
                   <span class="dashboard__status-value">
                     {{
                       deviceMonitoringService.currentEvent.timestamp
-                        | date: "dd MMM yyyy, hh:mm:ss a"
+                        | localizedDate
                     }}
                   </span>
                 </div>
@@ -186,7 +228,7 @@
               <!-- Waiting For SSE -->
               <ng-template #waitingForEvent>
                 <div class="dashboard__event-loading">
-                  <span>Waiting for device data...</span>
+                  <span>{{ "OVERVIEW.WAITING" | translate }}</span>
                 </div>
               </ng-template>
             </div>
@@ -194,7 +236,7 @@
             <!-- No Device Selected -->
             <ng-template #noDeviceSelected>
               <p class="dashboard__placeholder">
-                Select a device to start monitoring.
+                {{ "OVERVIEW.NO_SELECTION" | translate }}
               </p>
             </ng-template>
           </mat-card-content>
@@ -208,9 +250,11 @@
     <section class="dashboard__section" aria-labelledby="production-heading">
       <div class="dashboard__section-header">
         <div>
-          <h2 id="production-heading" class="dashboard__heading">Production</h2>
+          <h2 id="production-heading" class="dashboard__heading">
+            {{ "PRODUCTION.TITLE" | translate }}
+          </h2>
           <p class="dashboard__description">
-            Production information and performance metrics.
+            {{ "PRODUCTION.DESCRIPTION" | translate }}
           </p>
         </div>
       </div>
@@ -219,7 +263,9 @@
         <!-- ORDER INFORMATION -->
         <mat-card class="dashboard__card dashboard__order-card">
           <mat-card-header>
-            <mat-card-title>Order Information</mat-card-title>
+            <mat-card-title>
+              {{ "PRODUCTION.ORDER_INFORMATION" | translate }}
+            </mat-card-title>
           </mat-card-header>
           <mat-card-content>
             <!-- Loading Order -->
@@ -227,7 +273,7 @@
               *ngIf="deviceMonitoringService.loadingOrder; else orderContent"
               class="dashboard__loading"
             >
-              <span>Loading order information...</span>
+              <span>{{ "PRODUCTION.LOADING_ORDER" | translate }}</span>
             </div>
 
             <!-- Order Content -->
@@ -240,7 +286,9 @@
                 <div class="dashboard__order">
                   <!-- Order Number -->
                   <div class="dashboard__order-item">
-                    <span class="dashboard__order-label"> Order Number </span>
+                    <span class="dashboard__order-label">
+                      {{ "PRODUCTION.ORDER_NUMBER" | translate }}
+                    </span>
                     <span class="dashboard__order-value">
                       {{ deviceMonitoringService.currentOrder.orderNumber }}
                     </span>
@@ -249,12 +297,12 @@
                   <!-- Production Target -->
                   <div class="dashboard__order-item">
                     <span class="dashboard__order-label">
-                      Production Target
+                      {{ "PRODUCTION.TARGET" | translate }}
                     </span>
                     <span class="dashboard__order-value">
                       {{
                         deviceMonitoringService.currentOrder.productionTarget
-                          | number
+                          | localizedNumber
                       }}
                     </span>
                   </div>
@@ -262,12 +310,12 @@
                   <!-- Production State -->
                   <div class="dashboard__order-item">
                     <span class="dashboard__order-label">
-                      Production State
+                      {{ "PRODUCTION.STATE" | translate }}
                     </span>
                     <span class="dashboard__order-value">
                       {{
                         deviceMonitoringService.currentOrder.productionState
-                          | number
+                          | localizedNumber
                       }}
                     </span>
                   </div>
@@ -276,12 +324,12 @@
                 <div class="dashboard__order-progress">
                   <div class="dashboard__progress-heading">
                     <span class="dashboard__progress-label">
-                      Order completion
+                      {{ "PRODUCTION.ORDER_PROGRESS" | translate }}
                     </span>
                     <span class="dashboard__progress-percentage">
                       {{
                         deviceMonitoringService.orderProgressPercentage
-                          | number: "1.0-2"
+                          | localizedNumber: 0 : 2
                       }}%
                     </span>
                   </div>
@@ -295,22 +343,37 @@
                     aria-valuemin="0"
                     aria-valuemax="100"
                     [attr.aria-valuetext]="
-                      deviceMonitoringService.currentOrder.productionState +
-                      ' of ' +
-                      deviceMonitoringService.currentOrder.productionTarget +
-                      ' units produced'
+                      'PRODUCTION.ORDER_PROGRESS_ARIA'
+                        | translate
+                          : {
+                              produced:
+                                (deviceMonitoringService.currentOrder
+                                  .productionState | localizedNumber),
+                              target:
+                                (deviceMonitoringService.currentOrder
+                                  .productionTarget | localizedNumber),
+                            }
                     "
                     [attr.aria-label]="
-                      'Order progress ' +
-                      (deviceMonitoringService.orderProgressPercentage
-                        | number: '1.0-2') +
-                      ' percent'
+                      'PRODUCTION.ORDER_PROGRESS_PERCENT_ARIA'
+                        | translate
+                          : {
+                              percentage:
+                                (deviceMonitoringService.orderProgressPercentage
+                                  | localizedNumber: 0 : 2),
+                            }
                     "
                     [attr.title]="
-                      deviceMonitoringService.currentOrder.productionState +
-                      ' of ' +
-                      deviceMonitoringService.currentOrder.productionTarget +
-                      ' units produced'
+                      'PRODUCTION.ORDER_PROGRESS_ARIA'
+                        | translate
+                          : {
+                              produced:
+                                (deviceMonitoringService.currentOrder
+                                  .productionState | localizedNumber),
+                              target:
+                                (deviceMonitoringService.currentOrder
+                                  .productionTarget | localizedNumber),
+                            }
                     "
                   >
                     <div
@@ -326,7 +389,7 @@
               <!-- No Order -->
               <ng-template #noOrder>
                 <p class="dashboard__placeholder">
-                  Select a device to view order information.
+                  {{ "PRODUCTION.NO_ORDER" | translate }}
                 </p>
               </ng-template>
             </ng-template>
@@ -336,7 +399,9 @@
         <!-- PRODUCTION PERFORMANCE -->
         <mat-card class="dashboard__card">
           <mat-card-header>
-            <mat-card-title> Real-time Production Performance </mat-card-title>
+            <mat-card-title>
+              {{ "PRODUCTION.REAL_TIME" | translate }}
+            </mat-card-title>
           </mat-card-header>
           <mat-card-content>
             <app-d3-line-chart
@@ -349,9 +414,13 @@
         <!-- Parts Produced -->
         <mat-card class="dashboard__card">
           <mat-card-header>
-            <mat-card-title> Parts Produced </mat-card-title>
+            <mat-card-title>
+              {{ "PRODUCTION.PARTS_PRODUCED" | translate }}
+            </mat-card-title>
 
-            <mat-card-subtitle> Historic production count </mat-card-subtitle>
+            <mat-card-subtitle>
+              {{ "PRODUCTION.HISTORIC_COUNT" | translate }}
+            </mat-card-subtitle>
           </mat-card-header>
 
           <mat-card-content>

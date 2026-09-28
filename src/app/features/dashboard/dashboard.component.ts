@@ -12,6 +12,12 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ApiErrorService } from 'src/app/services/api-error.service';
 import { Subject, takeUntil } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslateModule } from '@ngx-translate/core';
+import { LanguageService } from 'src/app/services/language.service';
+import {
+  LocalizedDatePipe,
+  LocalizedNumberPipe,
+} from 'src/app/shared/localized-format.pipes';
 
 @Component({
   selector: 'app-dashboard',
@@ -27,6 +33,9 @@ import { MatIconModule } from '@angular/material/icon';
     D3LineChartComponent,
     D3PartsProducedChartComponent,
     MatProgressBarModule,
+    TranslateModule,
+    LocalizedDatePipe,
+    LocalizedNumberPipe,
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
@@ -38,6 +47,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   constructor(
     public readonly deviceMonitoringService: DeviceMonitoringService,
     private readonly apiErrorService: ApiErrorService,
+    public readonly languageService: LanguageService,
   ) {}
 
   ngOnInit(): void {
@@ -51,6 +61,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   onDeviceSelected(deviceId: string): void {
     this.deviceMonitoringService.selectDevice(deviceId);
+  }
+
+  onLanguageSelected(language: string): void {
+    this.languageService.setLanguage(language);
   }
 
   ngOnDestroy() {
