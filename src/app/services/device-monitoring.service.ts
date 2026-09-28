@@ -89,8 +89,6 @@ export class DeviceMonitoringService implements OnDestroy {
       return;
     }
 
-    console.log('event: : ', event)
-
     const orderChanged = this.currentOrderId !== event.order;
     if (orderChanged) {
       this.currentOrderId = event.order;
