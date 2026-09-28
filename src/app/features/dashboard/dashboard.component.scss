@@ -387,3 +387,130 @@ mat-divider {
     margin: 1rem 0;
   }
 }
+
+.dashboard__order-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dashboard__order-progress-summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.dashboard__order-progress-count {
+  color: var(--primary-text);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.dashboard__order-progress-percentage {
+  color: var(--secondary-text);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.dashboard__progress-track {
+  width: 100%;
+  height: 0.625rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: $color-bg-muted;
+}
+
+.dashboard__progress-value {
+  height: 100%;
+  border-radius: inherit;
+  background: $color-success-indicator;
+  transition: width 300ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard__progress-value {
+    transition: none;
+  }
+}
+
+.dashboard__order-progress-labels {
+  display: flex;
+  justify-content: space-between;
+  color: var(--secondary-text);
+  font-size: 0.75rem;
+}
+
+.dashboard__interrupt-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dashboard__interrupt-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background: var(--secondary-background);
+}
+
+.dashboard__interrupt-indicator {
+  flex: 0 0 auto;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+}
+
+.dashboard__interrupt-indicator--stopped {
+  background: #c62828;
+}
+
+.dashboard__interrupt-indicator--maintenance {
+  background: #f57c00;
+}
+
+.dashboard__interrupt-details {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.dashboard__interrupt-status {
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.dashboard__interrupt-status--stopped {
+  color: #c62828;
+}
+
+.dashboard__interrupt-status--maintenance {
+  color: #f57c00;
+}
+
+.dashboard__interrupt-time {
+  color: var(--secondary-text);
+  font-size: 0.75rem;
+}
+
+.dashboard__no-interrupts {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 6rem;
+  color: var(--secondary-text);
+  font-size: 0.875rem;
+}
+
+@media (max-width: 48rem) {
+  .dashboard__interrupt-details {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+}

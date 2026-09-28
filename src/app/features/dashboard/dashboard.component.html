@@ -274,7 +274,107 @@
             <mat-card-title> Real-time Production Performance </mat-card-title>
           </mat-card-header>
           <mat-card-content>
-            <p class="dashboard__placeholder">Graphical visualisation!</p>
+            <app-d3-line-chart
+              [data]="deviceMonitoringService.partsPerMinuteHistory"
+            >
+            </app-d3-line-chart>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Parts Produced -->
+        <mat-card class="dashboard__card">
+          <mat-card-header>
+            <mat-card-title> Parts Produced </mat-card-title>
+
+            <mat-card-subtitle> Historic production count </mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <app-d3-parts-produced-chart
+              [data]="deviceMonitoringService.partsProducedHistory"
+            >
+            </app-d3-parts-produced-chart>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="dashboard__card dashboard__chart-card">
+          <mat-card-header>
+            <mat-card-title> Order Progress </mat-card-title>
+
+            <mat-card-subtitle *ngIf="deviceMonitoringService.currentOrder">
+              Order #{{ deviceMonitoringService.currentOrder.orderNumber }}
+            </mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div
+              *ngIf="deviceMonitoringService.currentOrder; else noOrderProgress"
+              class="dashboard__order-progress"
+            >
+              <div class="dashboard__order-progress-summary">
+                <div class="dashboard__order-progress-produced">
+                  <span class="dashboard__order-progress-value">
+                    {{
+                      deviceMonitoringService.currentOrder.productionState
+                        | number
+                    }}
+                  </span>
+
+                  <span class="dashboard__order-progress-label">
+                    produced
+                  </span>
+                </div>
+
+                <div class="dashboard__order-progress-target">
+                  <span class="dashboard__order-progress-value">
+                    {{
+                      deviceMonitoringService.currentOrder.productionTarget
+                        | number
+                    }}
+                  </span>
+
+                  <span class="dashboard__order-progress-label"> target </span>
+                </div>
+
+                <div class="dashboard__order-progress-percentage">
+                  {{
+                    deviceMonitoringService.orderProgressPercentage
+                      | number: "1.0-2"
+                  }}%
+                </div>
+              </div>
+
+              <!-- Graphical progress -->
+
+              <div
+                class="dashboard__progress-track"
+                role="progressbar"
+                [attr.aria-valuenow]="
+                  deviceMonitoringService.orderProgressPercentage
+                "
+                aria-valuemin="0"
+                aria-valuemax="100"
+                [attr.aria-label]="
+                  'Order progress ' +
+                  (deviceMonitoringService.orderProgressPercentage
+                    | number: '1.0-2') +
+                  ' percent'
+                "
+              >
+                <div
+                  class="dashboard__progress-value"
+                  [style.width.%]="
+                    deviceMonitoringService.orderProgressPercentage
+                  "
+                ></div>
+              </div>
+            </div>
+
+            <ng-template #noOrderProgress>
+              <p class="dashboard__placeholder">
+                Select a device to view order progress.
+              </p>
+            </ng-template>
           </mat-card-content>
         </mat-card>
       </div>

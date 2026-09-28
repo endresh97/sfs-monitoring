@@ -5,6 +5,9 @@ import { Order } from '../models/order.model';
 import { DeviceApiService } from './device-api.service';
 import { DeviceEventService } from './device-event.service';
 import { OrderApiService } from './order-api.service';
+import { ProductionPoint } from '../models/production-point.model';
+import { PartsProducedPoint } from '../models/parts-produced-point.model';
+import { ProductionInterrupt } from '../models/production-interrupt.model';
 
 @Injectable({
   providedIn: 'root',
@@ -19,6 +22,11 @@ export class DeviceMonitoringService implements OnDestroy {
   error = '';
   private destroy$ = new Subject<void>();
   private currentOrderId: string | null = null;
+  private orderRequestId = 0;
+  private deviceSelectionVersion = 0;
+  partsPerMinuteHistory: ProductionPoint[] = [];
+  partsProducedHistory: PartsProducedPoint[] = [];
+  productionInterrupts: ProductionInterrupt[] = [];
 
   constructor(
     private readonly deviceApi: DeviceApiService,
@@ -48,11 +56,16 @@ export class DeviceMonitoringService implements OnDestroy {
   }
 
   selectDevice(deviceId: string): void {
+    this.deviceSelectionVersion += 1;
+    this.orderRequestId += 1;
     this.currentOrderId = null;
     this.selectedDeviceId = deviceId;
     this.currentEvent = null;
     this.currentOrder = null;
     this.error = '';
+    this.partsPerMinuteHistory = [];
+    this.partsProducedHistory = [];
+    this.productionInterrupts = [];
     this.eventService.connect(deviceId);
   }
 
@@ -76,29 +89,103 @@ export class DeviceMonitoringService implements OnDestroy {
       return;
     }
 
-    if (this.currentOrderId === event.order) {
-      return;
+    console.log('event: : ', event)
+
+    const orderChanged = this.currentOrderId !== event.order;
+    if (orderChanged) {
+      this.currentOrderId = event.order;
+      this.currentOrder = null;
     }
 
-    this.currentOrderId = event.order;
-    this.loadOrder(event.order);
+    this.partsPerMinuteHistory = [
+      ...this.partsPerMinuteHistory,
+      {
+        timestamp: event.timestamp,
+        partsPerMinute: event.partsPerMinute,
+      },
+    ].slice(-5);
+
+    if (event.status === 'stopped' || event.status === 'maintenance') {
+      this.productionInterrupts = [
+        {
+          timestamp: event.timestamp,
+          status: event.status,
+        },
+        ...this.productionInterrupts,
+      ].slice(0, 5);
+    }
+
+    this.loadOrder(event.order, event.timestamp, orderChanged);
   }
 
-  private loadOrder(orderId: string): void {
-    this.loadingOrder = true;
+  private loadOrder(
+    orderId: string,
+    timestamp: number,
+    showLoading: boolean,
+  ): void {
+    if (showLoading) {
+      this.loadingOrder = true;
+    }
+    const requestId = ++this.orderRequestId;
+    const selectionVersion = this.deviceSelectionVersion;
+
     this.orderApi
       .getOrder(orderId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (order) => {
-          this.currentOrder = order;
-          this.loadingOrder = false;
+          if (
+            selectionVersion !== this.deviceSelectionVersion ||
+            this.currentOrderId !== orderId
+          ) {
+            return;
+          }
+
+          this.partsProducedHistory = [
+            ...this.partsProducedHistory,
+            {
+              timestamp,
+              partsProduced: order.productionState,
+            },
+          ]
+            .sort((a, b) => a.timestamp - b.timestamp)
+            .slice(-5);
+
+          if (requestId === this.orderRequestId) {
+            this.currentOrder = order;
+            this.loadingOrder = false;
+          }
         },
         error: () => {
-          this.loadingOrder = false;
-          this.error = 'Unable to load order.';
+          if (
+            selectionVersion === this.deviceSelectionVersion &&
+            requestId === this.orderRequestId
+          ) {
+            this.loadingOrder = false;
+            this.error = 'Unable to load order.';
+          }
         },
       });
+  }
+
+  get orderProgressPercentage(): number {
+    if (!this.currentOrder) {
+      return 0;
+    }
+
+    const { productionTarget, productionState } = this.currentOrder;
+    if (
+      !Number.isFinite(productionTarget) ||
+      !Number.isFinite(productionState) ||
+      productionTarget <= 0 ||
+      productionState < 0
+    ) {
+      return 0;
+    }
+    return Math.max(
+      0,
+      Math.min((productionState / productionTarget) * 100, 100),
+    );
   }
 
   ngOnDestroy(): void {

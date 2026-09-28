@@ -1,0 +1,110 @@
+.d3-parts-produced-chart {
+  width: 100%;
+  min-height: 20rem;
+
+  position: relative;
+
+  overflow: hidden;
+
+  &__container {
+    width: 100%;
+  }
+
+  svg {
+    display: block;
+
+    width: 100%;
+    height: 20rem;
+
+    overflow: visible;
+  }
+
+  &__empty {
+    min-height: 20rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-direction: column;
+
+    gap: 0.5rem;
+
+    color: var(--secondary-text);
+
+    font-size: 0.875rem;
+  }
+
+  &__axis {
+    path,
+    line {
+      stroke: #d1d5db;
+    }
+
+    text {
+      fill: var(--secondary-text);
+
+      font-size: 0.6875rem;
+    }
+  }
+
+  &__grid {
+    line {
+      stroke: #e5e7eb;
+      stroke-opacity: 0.7;
+    }
+
+    path {
+      stroke: none;
+    }
+  }
+
+  &__line {
+    fill: none;
+
+    stroke: var(--primary-color);
+
+    stroke-width: 0.1875rem;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  &__point {
+    fill: var(--primary-color);
+
+    stroke: var(--primary-background);
+
+    stroke-width: 0.125rem;
+  }
+
+  &__axis-label {
+    fill: var(--secondary-text);
+
+    font-size: 0.6875rem;
+  }
+}
+
+@media (max-width: 48rem) {
+  .d3-parts-produced-chart {
+    min-height: 18rem;
+
+    svg {
+      height: 18rem;
+    }
+
+    &__empty {
+      min-height: 18rem;
+    }
+
+    &__axis {
+      text {
+        font-size: 0.625rem;
+      }
+    }
+
+    &__axis-label {
+      font-size: 0.625rem;
+    }
+  }
+}

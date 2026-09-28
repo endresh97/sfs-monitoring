@@ -6,6 +6,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { DeviceMonitoringService } from 'src/app/services/device-monitoring.service';
+import { D3LineChartComponent } from 'src/app/shared/d3-line-chart/d3-line-chart.component';
+import { D3PartsProducedChartComponent } from 'src/app/shared/d3-parts-produced-chart/d3-parts-produced-chart.component';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @Component({
   selector: 'app-dashboard',
@@ -17,6 +20,9 @@ import { DeviceMonitoringService } from 'src/app/services/device-monitoring.serv
     MatDividerModule,
     MatFormFieldModule,
     MatSelectModule,
+    D3LineChartComponent,
+    D3PartsProducedChartComponent,
+    MatProgressBarModule,
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
